@@ -22,7 +22,7 @@ export default function Home() {
         scrollbar-track-gray-400/20 scrollbar-thumb-[#F7AB0A]'>
 
       <Head>
-        <title>Elvis' Portfolio</title>
+        <title>Elvis Portfolio</title>
       </Head>
       <Banner/>
 
