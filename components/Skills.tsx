@@ -12,6 +12,10 @@ import SkillPython from './SkillIcons/SkillPython'
 import SkillUnity from './SkillIcons/SkillUnity'
 import SkillJava from './SkillIcons/SkillJava'
 import SkillSQL from './SkillIcons/SkillSQL'
+import SkillNext from './SkillIcons/SkillNext'
+import SkillThree from './SkillIcons/SkillThree'
+import SkillVercel from './SkillIcons/SkillVercel'
+import SkillSanity from './SkillIcons/SkillSanity'
 
 type Props = {}
 
@@ -44,6 +48,10 @@ function Skills({}: Props) {
             <SkillUnity/>
             <SkillJava/>
             <SkillSQL/>
+            <SkillNext/>
+            <SkillThree/>
+            <SkillVercel/>
+            <SkillSanity/>
             
         </div>
     </motion.div>
