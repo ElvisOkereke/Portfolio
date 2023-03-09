@@ -1,3 +1,5 @@
+/* eslint react/no-unescaped-entities */
+
 import Head from 'next/head'
 import { Inter } from 'next/font/google'
 import Banner from '@/components/banner'
@@ -10,6 +12,8 @@ import Projects from '@/components/Projects'
 import Contact from '@/components/Contact'
 import Link from 'next/link'
 import Image from 'next/image'
+
+
 
 
 const inter = Inter({ subsets: ['latin'] })
