@@ -43,8 +43,8 @@ function About({}: Props) {
     <h4 className='text-4xl font-semibold'>
         My background
     </h4>
-        <p className=''>
-        I am currently a Computer Engineering student at Ryerson University, pursuing a Bachelor's Degree.
+        <p>
+        I am currently a Computer Engineering student at Ryerson University, pursuing a Bachelor&apos;s Degree.
         Creativity and Productivity are my passions. I enjoy programming, automotive engineering, and motorsport. They have been my passions for the past 5 years, and have many side projects including; games, ML models WebDev, and mobile apps.
         Feel free to check out my GitHub, LinkedIn, and Youtube links at top of the page!
         </p>
