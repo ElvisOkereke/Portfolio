@@ -24,5 +24,3 @@ if (!isProd) {
     legacyBrowsers: false,
   };
 }
-
-module.exports = nextConfig;

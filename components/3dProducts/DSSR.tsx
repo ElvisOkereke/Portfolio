@@ -29,7 +29,7 @@ function Dssr({}: Props) {
       >
         <Image
           className="w-32 h-32 rounded-full xl:w-[200px] xl:h-[200px] object-cover object-center "
-          src="https://cdn.discordapp.com/attachments/705799653848776784/1090043488546066432/1673895701-568.png"
+          src="/pics/1673895701-568.png"
           height={1000}
           width={1000}
           alt=""

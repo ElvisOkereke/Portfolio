@@ -11,7 +11,7 @@ import Model from "./Model";
 //Import and use the `Model` component in your Next.js page
 
 function Scene() {
-  const modelUrl = "./GaugePod.glb";
+  const modelUrl = "./models/GaugePod.glb";
 
   return (
     <>
