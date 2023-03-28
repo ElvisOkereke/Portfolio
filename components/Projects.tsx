@@ -58,7 +58,7 @@ function Projects({}: Props) {
                             
                         </h4>
                         <ul className='text-lg text-center md:text-left'>
-                        <li>{descriptions[i][0]}</li>
+                        <li >{descriptions[i][0]}</li>
                         <li>{descriptions[i][1]}</li>
                         <li>{descriptions[i][2]}</li>
                         </ul>
