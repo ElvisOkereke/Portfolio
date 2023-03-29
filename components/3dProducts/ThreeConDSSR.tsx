@@ -30,7 +30,7 @@ function Scene() {
 export default function Home() {
   //file is in public folder
   return (
-    <div className=" w-[500px] h-[300px]">
+    <div className=" w-[500px] h-[300px] border">
       <Suspense>
         <Canvas>
           <Scene />
