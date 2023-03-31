@@ -1,4 +1,5 @@
-import { Canvas, useLoader } from "@react-three/fiber";
+import React, { useRef } from "react";
+import { Canvas, useFrame } from "@react-three/fiber";
 import {
   Environment,
   PerspectiveCamera,
@@ -7,11 +8,30 @@ import {
 } from "@react-three/drei";
 import { Suspense } from "react";
 import Model from "./Model";
+import { useSpring, animated } from "@react-spring/three";
 
 //Import and use the `Model` component in your Next.js page
+const delay = 2500;
 
 function Scene() {
   const modelUrl = "./models/DSSRfix.glb";
+
+  const { DSSRRotation } = useSpring({
+    from: { DSSRRotation: 0 },
+    to: [
+      { DSSRRotation: -Math.PI / 2, delay: delay },
+      { DSSRRotation: -Math.PI, delay: delay },
+      { DSSRRotation: -1.5 * Math.PI, delay: delay },
+      { DSSRRotation: -2 * Math.PI, delay: delay },
+    ],
+    config: {
+      mass: 5,
+      tension: 170,
+      friction: 46,
+    },
+    loop: true,
+    immediate: true,
+  });
 
   return (
     <>
@@ -19,10 +39,11 @@ function Scene() {
       <directionalLight />
       <Environment preset="sunset" />
       <OrbitControls />
-      <mesh>
-        <Model url={modelUrl} />
-        <meshNormalMaterial />
-      </mesh>
+      <animated.group rotation-y={DSSRRotation}>
+        <mesh>
+          <Model url={modelUrl} />
+        </mesh>
+      </animated.group>
     </>
   );
 }
