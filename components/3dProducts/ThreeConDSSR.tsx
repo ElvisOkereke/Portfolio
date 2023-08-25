@@ -35,9 +35,9 @@ function Scene() {
 
   return (
     <>
-      <ambientLight intensity={0.2} />
+      <ambientLight intensity={0.8} />
       <directionalLight />
-      <Environment preset="sunset" />
+
       <OrbitControls />
       <animated.group rotation-y={DSSRRotation}>
         <mesh>

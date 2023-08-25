@@ -17,7 +17,7 @@ function Scene() {
     <>
       <ambientLight intensity={0.2} />
       <directionalLight />
-      <Environment preset="sunset" />
+
       <OrbitControls />
       <mesh>
         <Model url={modelUrl} />
