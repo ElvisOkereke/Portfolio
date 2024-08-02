@@ -2,30 +2,40 @@
 import React from "react";
 import { motion } from "framer-motion";
 import Image from "next/image";
+import Link from "next/link";
 
 type Props = {};
 
 function Projects({}: Props) {
   const projects = [1, 2, 3];
+  const links = [
+    "https://data-log-viewer-2mrxicpt0-elvisokerekes-projects.vercel.app/",
+    "https://github.com/ElvisOkereke/flutter_logviewer",
+    "",
+  ];
   const titles = [
-    "Python DataLogViewer w/TensorFlow",
-    "2D Dungeon Crawler",
+    "NextJs DataLogViewer",
+    "DataLogViewer2.0 with Flutter",
     "2D Dungeon Crawler",
   ];
   const descriptions = [
     [
       "- Full Stack site utilizing MongoDB Atlas, Express.js, React, and NodeJS.",
       "- Displays, archives, and classifies over 100 automotive performance datalogs.",
-      "- Leverages Pytorch Lighting LSTM to categorize data into 3 distinct classes, streamlining analysis and knowledge mining processes",
+      "- Utilizes NextJs for server-side rendering and dynamic routing.",
     ],
     [
-      " - Unity Platformer with unique combat, movement, and Boss fights.",
-      " - Unity Platformer with unique combat, movement, and Boss fights.",
-      " - Unity Platformer with unique combat, movement, and Boss fights.",
+      "- Displays, archives, and classifies over 100 automotive performance datalogs.",
+      "- Leverages Pytorch Lighting LSTM to categorize data into 3 distinct classes, streamlining analysis and knowledge mining processes",
+      "- Made with Flutter/Dart for cross-platform Desktop compatibility.",
     ],
-    ["test", "test", "test"],
+    [
+      "- Unity Platformer with unique combat, movement, and Boss fights.",
+      "- Unity Platformer with unique combat, movement, and Boss fights.",
+      "- Unity Platformer with unique combat, movement, and Boss fights.",
+    ],
   ];
-  const images = ["/pics/pngegg_7.png", "/pics/ZH9wgi.png", "/pics/ZH9wgi.png"];
+  const images = ["/pics/1.0.png", "/pics/chart.png", "/pics/pngegg_7.png"];
   return (
     <motion.div
       initial={{
@@ -65,7 +75,9 @@ function Projects({}: Props) {
                 once: true,
               }}
             >
-              <Image src={images[i]} height={250} width={250} alt="" />
+              <Link href={links[i]}>
+                <Image src={images[i]} height={600} width={600} alt="" />
+              </Link>
             </motion.div>
 
             <div className="space-y-10 px-0 md:px-10 max-w-6xl">

@@ -27,7 +27,7 @@ function ExperienceCardTut({}: Props) {
       >
         <Image
           className="w-32 h-32 rounded-full xl:w-[200px] xl:h-[200px] object-cover object-center "
-          src="/pics/tutdoc.jpg"
+          src="/pics/Dark_Slope.png"
           height={1000}
           width={1000}
           alt=""
@@ -35,17 +35,24 @@ function ExperienceCardTut({}: Props) {
       </motion.div>
 
       <div className="px-0 md:px-10">
-        <h4 className="text-4xl font-light">High School STEM Tutor</h4>
-        <p className="font-bold text-2xl mt-1">
-          Tutor Doctor Corporation, Toronto
-        </p>
+        <h4 className="text-4xl font-light">Software QA Intern</h4>
+        <p className="font-bold text-2xl mt-1">Dark Slope Studios, Toronto</p>
         <p className="uppercase py-5 text-gray-200">
-          Start/End Date: Sept 2022 to Sept 2022
+          Start/End Date: Sept 2023 to Oct 2023
         </p>
         <ul className="list-disc space-y-4 ml-5 text-lg">
           <li>
-            Tutored 15+ students in High School STEM courses. Ranging from Grade
-            9-12
+            Participated in an Agile team with daily team stand-ups, weekly
+            stakeholder demos, and helped manage team stories (using JIRA) for 2
+            major deliverables.
+          </li>
+          <li>
+            Troubleshoot and isolate issues, submit bugs and work with
+            developers
+          </li>
+          <li>
+            Identify areas of improvement from QA perspective and follow-up with
+            solutions
           </li>
         </ul>
       </div>

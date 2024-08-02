@@ -35,7 +35,7 @@ function Scene() {
 
   return (
     <>
-      <ambientLight intensity={0.8} />
+      <ambientLight intensity={0.2} />
       <directionalLight />
 
       <OrbitControls />

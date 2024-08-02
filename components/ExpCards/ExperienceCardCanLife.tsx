@@ -27,7 +27,7 @@ function ExperienceCardTut({}: Props) {
       >
         <Image
           className="w-32 h-32 rounded-full xl:w-[200px] xl:h-[200px] object-cover object-center "
-          src="/pics/tutdoc.jpg"
+          src="/pics/channels4_profile.jpg"
           height={1000}
           width={1000}
           alt=""
@@ -35,17 +35,30 @@ function ExperienceCardTut({}: Props) {
       </motion.div>
 
       <div className="px-0 md:px-10">
-        <h4 className="text-4xl font-light">High School STEM Tutor</h4>
+        <h4 className="text-4xl font-light">Automation and Data Specialist</h4>
         <p className="font-bold text-2xl mt-1">
-          Tutor Doctor Corporation, Toronto
+          Canada Life Insurance, Toronto
         </p>
         <p className="uppercase py-5 text-gray-200">
-          Start/End Date: Sept 2022 to Sept 2022
+          Start/End Date: Jan 2024 to Apr 2024
         </p>
         <ul className="list-disc space-y-4 ml-5 text-lg">
           <li>
-            Tutored 15+ students in High School STEM courses. Ranging from Grade
-            9-12
+            Worked with automated and data integrated solutions among existing
+            and new systems with legacy and emergent technologies (Jenkins,
+            Zephyr, Apache Kafka)
+          </li>
+          <li>
+            Created a Testing Data Dashboard project, increasing the efficiency
+            of Testing Team Leads.
+          </li>
+          <li>
+            Contributed to the development of the automated solutions and
+            framework enhancements
+          </li>
+          <li>
+            Gained a clear understanding of business problems and helped define
+            automated solutions.
           </li>
         </ul>
       </div>
