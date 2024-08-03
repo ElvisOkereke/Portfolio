@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 import Link from "next/link";
 
-type Props = {};
+type Props = {}; //npm run dev
 
 function Projects({}: Props) {
   const projects = [1, 2, 3];

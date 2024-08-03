@@ -16,6 +16,7 @@ import Image from "next/image";
 const inter = Inter({ subsets: ["latin"] });
 
 export default function Home() {
+  //npm run dev
   return (
     <>
       <div
