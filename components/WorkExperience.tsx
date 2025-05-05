@@ -5,7 +5,7 @@ import ExperienceCardTut from "./ExpCards/ExperienceCardTut";
 import ExperienceCardLVBT from "./ExpCards/ExperienceCardLVBT";
 import ExperienceCardDS from "./ExpCards/ExperienceCardDS";
 import ExperienceCardCanLife from "./ExpCards/ExperienceCardCanLife";
-
+import ExperienceCardCanLife2 from "./ExpCards/ExperienceCardCanLife2";
 type Props = {};
 
 function WorkExperience({}: Props) {
@@ -30,10 +30,11 @@ function WorkExperience({}: Props) {
         className="w-full flex space-x-5 overflow-x-scroll p-10 snap-x snap-mandatory scrollbar
         scrollbar-track-gray-400/20 scrollbar-thumb-[#F7AB0A]"
       >
-        <ExperienceCardLVBT />
-        <ExperienceCardMS />
         <ExperienceCardCanLife />
+        <ExperienceCardCanLife2 />
+        <ExperienceCardMS />
         <ExperienceCardDS />
+        <ExperienceCardLVBT />
         <ExperienceCardTut />
       </div>
     </motion.div>

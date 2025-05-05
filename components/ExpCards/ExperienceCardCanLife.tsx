@@ -44,21 +44,13 @@ function ExperienceCardTut({}: Props) {
         </p>
         <ul className="list-disc space-y-4 ml-5 text-lg">
           <li>
-            Worked with automated and data integrated solutions among existing
-            and new systems with legacy and emergent technologies (Jenkins,
-            Zephyr, Apache Kafka)
+          Developed a Testing Data Dashboard that increased testing efficiency by 25% for Team Leads by providing real-time metrics visualization
           </li>
           <li>
-            Created a Testing Data Dashboard project, increasing the efficiency
-            of Testing Team Leads.
+          Engineered automated solutions using Jenkins and Zephyr, while adhering to strict security and compliance requirements
           </li>
           <li>
-            Contributed to the development of the automated solutions and
-            framework enhancements
-          </li>
-          <li>
-            Gained a clear understanding of business problems and helped define
-            automated solutions.
+          Implemented comprehensive end-to-end testing and documentation that adhered to the standardized testing methodologies across teams.
           </li>
         </ul>
       </div>

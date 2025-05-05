@@ -1,9 +1,12 @@
-import React from "react";
+import React, { Suspense } from "react";
 import { Cursor, useTypewriter } from "react-simple-typewriter";
 import BackgroundCircles from "./BackgroundCircles";
 import Image from "next/image";
 import HeroHeadshot from "../public/Shlam.jpg";
 import Link from "next/link";
+import { Canvas } from "@react-three/fiber";
+import { PerspectiveCamera } from "@react-three/drei";
+import ThreeConTurbo from "./3dProducts/ThreeConTurbo";
 
 type Props = {};
 
@@ -48,7 +51,12 @@ export default function Hero({}: Props) {
           <Link href="#projects">
             <button className="heroButton">Projects</button>
           </Link>
+          
         </div>
+        
+        
+
+        
       </div>
     </div>
   );

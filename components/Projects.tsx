@@ -16,13 +16,13 @@ function Projects({}: Props) {
   const titles = [
     "NextJs DataLogViewer",
     "DataLogViewer2.0 with Flutter",
-    "2D Dungeon Crawler",
+    "SWE Capstone Project - Minimizing Bias In LLMs",
   ];
   const descriptions = [
     [
-      "- Full Stack site utilizing MongoDB Atlas, Express.js, React, and NodeJS.",
-      "- Displays, archives, and classifies over 100 automotive performance datalogs.",
-      "- Utilizes NextJs for server-side rendering and dynamic routing.",
+      "- Developed Python/PyTorch-based fine-tuning scripts to reduce bias in large language models, Achieved a 20% reduction in measured bias while maintaining model performance.",
+      "- Implemented advanced techniques including Social Contact Debias, Gender Logits, and Custom Loss Functions.",
+      "- Integrated with Hugging Face and Perspective API for model evaluation and improvement.",
     ],
     [
       "- Displays, archives, and classifies over 100 automotive performance datalogs.",
@@ -30,12 +30,12 @@ function Projects({}: Props) {
       "- Made with Flutter/Dart for cross-platform Desktop compatibility.",
     ],
     [
-      "- Unity Platformer with unique combat, movement, and Boss fights.",
-      "- Unity Platformer with unique combat, movement, and Boss fights.",
-      "- Unity Platformer with unique combat, movement, and Boss fights.",
+      "- Full Stack site utilizing MongoDB Atlas, Express.js, React, and NodeJS.",
+      "- Displays, archives, and classifies over 100 automotive performance datalogs.",
+      "- Utilizes NextJs for server-side rendering and dynamic routing.",
     ],
   ];
-  const images = ["/pics/1.0.png", "/pics/chart.png", "/pics/pngegg_7.png"];
+  const images = ["/pics/pngegg_7.png", "/pics/chart.png", "/pics/1.0.png"];
   return (
     <motion.div
       initial={{

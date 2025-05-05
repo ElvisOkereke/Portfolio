@@ -65,8 +65,8 @@ function ExperienceCardMS({}: Props) {
         </p>
         <ul className="list-disc space-y-4 ml-5 text-lg">
           <li>
-            Developed with technologies including, Microsoft Azure Cloud, Data,
-            AI, & Cyber Security
+          Built a chatbot infrastructure using Azure AI services that addressed 2
+           key business cases, resulting in improved customer service efficiency
           </li>
           <li>
             Participated in an Internal Hackathon, presented business tech

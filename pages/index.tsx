@@ -12,6 +12,7 @@ import Projects from "@/components/Projects";
 import Contact from "@/components/Contact";
 import Link from "next/link";
 import Image from "next/image";
+import MovingThreeDComponent from "@/components/MovingThreeDComponent";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -29,7 +30,7 @@ export default function Home() {
         </Head>
         <Banner />
 
-        <section id="hero" className="snap-start">
+        <section id="hero" className="snap-start relative overflow-hidden">
           <Hero />
         </section>
 
