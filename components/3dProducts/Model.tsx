@@ -1,6 +1,5 @@
 import React, { useRef, useEffect } from "react";
 import { useGLTF } from "@react-three/drei";
-import { GLTF } from "three/examples/jsm/loaders/GLTFLoader";
 import { forwardRef, ForwardRefRenderFunction } from "react";
 
 //a component to load and render the 3D model

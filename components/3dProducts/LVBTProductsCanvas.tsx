@@ -1,7 +1,6 @@
 
 import React, { Suspense, useRef, useState, useMemo, useEffect } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-// Removed TransformControls import
 import { OrbitControls, Environment, Html, useGLTF } from "@react-three/drei";
 import * as THREE from 'three';
 

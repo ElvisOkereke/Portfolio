@@ -1,15 +1,6 @@
 import Head from "next/head";
 import { Inter } from "next/font/google";
 import Banner from "@/components/banner";
-import Hero from "@/components/hero";
-import { SocialIcon } from "react-social-icons";
-import About from "@/components/About";
-import WorkExperience from "@/components/WorkExperience";
-import Skills from "@/components/Skills";
-import Projects from "@/components/Projects";
-import Contact from "@/components/Contact";
-import Link from "next/link";
-import Image from "next/image";
 import Products from "@/components/Products";
 
 const inter = Inter({ subsets: ["latin"] });
