@@ -26,7 +26,7 @@ export default function Home() {
           <title>LVBT Products</title>
         </Head>
         <Banner />
-        <section id="projects" className="">
+        <section id="products" className="">
           <Products />
         </section>
       </div>
