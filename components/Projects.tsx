@@ -10,9 +10,9 @@ function Projects({}: Props) {
   const projects = [1, 2, 3, 4];
   const links = [
     "https://ai-hq.vercel.app",
-    "https://data-log-viewer-2mrxicpt0-elvisokerekes-projects.vercel.app/",
     "https://github.com/ElvisOkereke/flutter_logviewer",
-    "https://github.com/ElvisOkereke/Capstone"
+    "https://github.com/ElvisOkereke/Capstone",
+    "https://data-log-viewer-2mrxicpt0-elvisokerekes-projects.vercel.app/",
     
   ];
   const titles = [
