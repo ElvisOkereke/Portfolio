@@ -1,10 +1,10 @@
 
 import React, { Suspense, useRef, useState, useMemo, useEffect } from "react";
-import { Canvas, useFrame, useThree } from "@react-three/fiber";
+import { Canvas, useFrame } from "@react-three/fiber";
 import { OrbitControls, Environment, Html, useGLTF } from "@react-three/drei";
 import * as THREE from 'three';
 
-// Assuming your Model component simply loads the GLB or use useGLTF directly
+
 function Model({ url, ...props }: { url: string } & any) {
   const gltf = useGLTF(url) as { scene: THREE.Group };
   const { scene } = gltf;
@@ -24,9 +24,9 @@ const productsData = [
       "Works with any setup",
       "Works on E46 and E36 - 3 Series, E38 - 7 Series, E39 - 5 Series, BMWs.",
     ],
-    modelPath: "./models/T3 to 2.5 VBand v2.glb", // Using turbo.glb as a placeholder. Adjust if you have a specific AE model.
+    modelPath: "./models/T3 to 2.5 VBand v2.glb", 
     scale: 0.08, // Adjust scale for individual model
-    initialRotation: [0, Math.PI / 2 + Math.PI / 4, 0] as [number, number, number], // Example unique rotation (Y axis + 45 degrees)
+    initialRotation: [0, Math.PI / 2 + Math.PI / 4, 0] as [number, number, number], 
   },
   {
     id: 'turbo',
@@ -37,9 +37,9 @@ const productsData = [
       "Turbo",
       "Turbo",
     ],
-    modelPath: "./models/turbo.glb", // Using turbo.glb as a placeholder. Adjust if you have a specific AE model.
+    modelPath: "./models/turbo.glb",
     scale: 0.1, // Adjust scale for individual model
-    initialRotation: [0, Math.PI / 2 + Math.PI / 4, 0] as [number, number, number], // Example unique rotation (Y axis + 45 degrees)
+    initialRotation: [0, Math.PI / 2 + Math.PI / 4, 0] as [number, number, number], 
   },
   {
     id: 'dssr',
@@ -50,7 +50,7 @@ const productsData = [
       "The DSSR redistributes the torsional forces from the pin/bushing interface to the complete face area on both sides of the selector joint. By taking advantage of the strength of steel in the DSSR and the body of the joint",
     ],
     modelPath: "./models/DSSRfix.glb",
-    scale: 0.15, // Adjust scale for individual model
+    scale: 0.15, 
      // No initialRotation specified, will use calculated one to face center
   },
   {
@@ -63,8 +63,8 @@ const productsData = [
       "Works on E46 and 3 Series BMWs.",
     ],
     modelPath: "./models/GaugePod.glb",
-     scale: 0.04, // Adjust scale for individual model
-     initialRotation: [60, -Math.PI / 2 - Math.PI / 4, 0] as [number, number, number], // Example unique rotation (Y axis - 45 degrees)
+     scale: 0.04, 
+     initialRotation: [60, -Math.PI / 2 - Math.PI / 4, 0] as [number, number, number],
   },
 ];
 
@@ -126,7 +126,7 @@ function TooltipContent({ product, visible }: { product: typeof productsData[0],
 }
 
 
-// Simplified ProductItem - Removed the Html tooltip rendering from here
+
 function ProductItem({ product, isHovered, onPointerOver, onPointerOut }: {
     product: typeof positionedProducts[0],
     isHovered: boolean,
@@ -145,19 +145,8 @@ function ProductItem({ product, isHovered, onPointerOver, onPointerOut }: {
              rotation={rotation} // Use the pre-calculated/defined initial rotation
              onPointerOver={(e) => { e.stopPropagation(); onPointerOver(e, id); }} // Re-enabled hover handler
              onPointerOut={(e) => { e.stopPropagation(); onPointerOut(e); }} // Re-enabled hover handler
-             // Removed onClick handler
         >
             <Model url={modelPath} scale={scale} />
-
-            {/* REMOVED: Html tooltip rendering from here */}
-             {/* {isHovered && (
-                 <Html
-                    position={[0, 1, 0]}
-                    center={true}
-                    >
-                     <TooltipContent product={product} visible={isHovered} />
-                 </Html>
-             )} */}
         </group>
     );
 }
@@ -169,11 +158,10 @@ function SceneContents() {
     const controlsRef = useRef<any>(null);
     const timeoutRef = useRef<NodeJS.Timeout | null>(null); // Ref for the inactivity timeout
     const lastInteractionTime = useRef<number>(Date.now()); // Track last interaction time
-
     const [hoveredItemId, setHoveredItemId] = useState<string | null>(null); // State for hover tooltip
 
 
-    // Refined Auto-rotation logic: Auto-rotate the OrbitControls target position instead of the group.
+    
      const autoRotateSpeed = 0.05; // Degrees per frame approx
      useFrame((state) => {
          const now = Date.now();
@@ -244,22 +232,17 @@ function SceneContents() {
             <directionalLight position={[-10, 10, -10]} intensity={0.4} />
             <directionalLight position={[0, -10, 0]} intensity={0.1} />
 
-            {/* Environment */}
-            <Environment preset="city" />
-
             {/* Render Product Items */}
             {positionedProducts.map((product) => ( // Use positionedProducts with initial rotations
                 <ProductItem
                     key={product.id}
                     product={product}
                     isHovered={hoveredItemId === product.id} // isHovered prop for potential styling
-                    onPointerOver={handlePointerOver} // Re-enabled hover handler
-                    onPointerOut={handlePointerOut} // Re-enabled hover handler
+                    onPointerOver={handlePointerOver} 
+                    onPointerOut={handlePointerOut} 
                 />
             ))}
 
-            {/* OrbitControls */}
-            {/* No need to disable/enable based on TransformControls anymore */}
             <OrbitControls
                 ref={controlsRef} // Assign ref
                 enablePan={false} // Disable panning
@@ -269,9 +252,6 @@ function SceneContents() {
                 maxPolarAngle={Math.PI / 1.8}
             />
 
-             {/* Removed TransformControls */}
-
-             {/* Render tooltip separately based on hovered object - ONLY ONCE here */}
              {hoveredItemId && (
                  <Html
                     // Find the hovered product to get its position for the tooltip
@@ -296,9 +276,9 @@ const LVBTProductsCanvas = () => {
     return (
         <Canvas
             camera={{ position: [0, carouselRadius * 1.5, carouselRadius * 2.5], fov: 50 }}
-            shadows // Consider removing if performance is an issue
+            //shadows // Consider removing if performance is an issue
             gl={{
-                antialias: true, // Keep antialiasing for smoother look, but consider removing if lag persists
+                //antialias: true, // Keep antialiasing for smoother look, but consider removing if lag persists
             }}
         >
             <color attach="background" args={['#242424']} />
