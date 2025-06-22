@@ -25,8 +25,8 @@ export default function Hero({}: Props) {
     <div className="h-screen flex flex-col space-y-8 items-center justify-center text-center overflow-hidden">
       <BackgroundCircles />
 
-      <div className="relative rounded-full h-40 w-40 mx-auto object-cover">
-        <Image src="/pics/Shlam.jpg" height={1000} width={5000} alt="" />
+      <div>
+        <Image src="/pics/irelia-om.jpg" height={3024} width={4032} alt="" className="relative rounded-full h-80 w-80 mx-auto object-cover"/>
       </div>
 
       <div className="z-20">

@@ -7,18 +7,26 @@ import Link from "next/link";
 type Props = {}; //npm run dev
 
 function Projects({}: Props) {
-  const projects = [1, 2, 3];
+  const projects = [1, 2, 3, 4];
   const links = [
+    "https://ai-hq.vercel.app",
     "https://data-log-viewer-2mrxicpt0-elvisokerekes-projects.vercel.app/",
     "https://github.com/ElvisOkereke/flutter_logviewer",
-    "",
+    "https://github.com/ElvisOkereke/Capstone"
+    
   ];
   const titles = [
-    "NextJs DataLogViewer",
+    "AI-HQ",
     "DataLogViewer2.0 with Flutter",
     "SWE Capstone Project - Minimizing Bias In LLMs",
+    "NextJs DataLogViewer",
   ];
   const descriptions = [
+    [
+      "- A modern, full-stack AI chat platform built with the NEXTJS 15 and React Server Component Architecture. ",
+      "- Featuring intelligent conversations powered by Google's Gemini AI, Nvidia NIMs, and HuggingFace Inference Models.",
+      "- This project demonstrates advanced agentic AI capabilities with persistent chat history, image generation, and a sleek, responsive interface.",
+    ],
     [
       "- Developed Python/PyTorch-based fine-tuning scripts to reduce bias in large language models, Achieved a 20% reduction in measured bias while maintaining model performance.",
       "- Implemented advanced techniques including Social Contact Debias, Gender Logits, and Custom Loss Functions.",
@@ -35,7 +43,7 @@ function Projects({}: Props) {
       "- Utilizes NextJs for server-side rendering and dynamic routing.",
     ],
   ];
-  const images = ["/pics/pngegg_7.png", "/pics/chart.png", "/pics/1.0.png"];
+  const images = ["/pics/aihq.png", "/pics/chart.png", "/pics/pngegg_7.png","/pics/1.0.png"];
   return (
     <motion.div
       initial={{
@@ -75,9 +83,15 @@ function Projects({}: Props) {
                 once: true,
               }}
             >
-              <Link href={links[i]}>
-                <Image src={images[i]} height={600} width={600} alt="" />
-              </Link>
+                <Link href={links[i]}>
+                <Image
+                  src={images[i]}
+                  height={800}
+                  width={800}
+                  alt=""
+                  className="h-[40rem] w-[40rem] max-w-full max-h-[80vh] object-contain"
+                />
+                </Link>
             </motion.div>
 
             <div className="space-y-10 px-0 md:px-10 max-w-6xl">

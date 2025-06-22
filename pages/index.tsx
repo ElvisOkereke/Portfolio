@@ -46,7 +46,7 @@ export default function Home() {
           <Skills />
         </section>
 
-        <section id="projects" className="snap-start">
+        <section id="projects" className="snap-start z-10">
           <Projects />
         </section>
 
