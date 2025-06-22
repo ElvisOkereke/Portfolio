@@ -10,8 +10,8 @@ type ModelProps = {
 };
 
 const Model: ForwardRefRenderFunction<any, ModelProps> = ({ url }, ref) => {
-  const { scene } = useGLTF(url) as GLTF;
-
+  const gltf = useGLTF(url) as { scene: THREE.Group };
+    const { scene } = gltf;
   return <primitive ref={ref} object={scene.clone()} dispose={null} />;
 };
 
