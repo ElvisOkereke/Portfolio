@@ -8,7 +8,8 @@ vi.mock("resend", () => ({
   })),
 }));
 
-import { POST, validateContactPayload } from "@/app/api/contact/route";
+import { POST } from "@/app/api/contact/route";
+import { validateContactPayload } from "@/lib/contact";
 
 describe("validateContactPayload", () => {
   it("rejects a missing name", () => {
