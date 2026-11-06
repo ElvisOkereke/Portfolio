@@ -22,17 +22,18 @@ export default function About() {
       <div className="space-y-4">
         <h3 className="section-eyebrow">About</h3>
         <p className="text-foreground/80 leading-relaxed">
-          I&apos;m a Computer Engineering graduate from Toronto Metropolitan University, currently
-          building production ML/AI infrastructure as a Software Developer at TELUS — most recently
-          a retrieval-augmented knowledge base that cut LLM inference costs through semantic
-          chunking and response caching.
+          I&apos;m a Computer Engineering graduate from Toronto Metropolitan University and a
+          Software Developer at TELUS, where I work across the stack: data pipelines, Next.js apps
+          on GKE, auth, CI/CD and infrastructure as code. Most recently I built a production
+          RAG knowledge-base server that cut LLM inference costs through semantic chunking and
+          response caching.
         </p>
         <p className="text-foreground/80 leading-relaxed">
-          Outside of work I build my own ML-powered products end to end, from a Swift app that
-          gives LLM-based feedback on tennis technique to a Chrome extension that generates and
-          translates subtitles in real time. In school, I helped build fine-tuning pipelines that
-          reduced measured bias in language models by 20% using LoRA and parameter-efficient
-          fine-tuning.
+          Outside of work I build the tools I actually use: an AI research pipeline that turns real
+          demand into sourced business cases, a job-search engine whose AI can&apos;t make things up
+          on my resume, a datalog viewer for tuning my car, and a Rust clip recorder for my games.
+          In school, I helped build fine-tuning pipelines that reduced measured bias in language
+          models by 20% using LoRA and parameter-efficient fine-tuning.
         </p>
         <p className="text-foreground/80 leading-relaxed">
           I&apos;m based in Toronto and always happy to talk about anything ML, infra, or the

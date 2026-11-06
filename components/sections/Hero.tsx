@@ -8,7 +8,7 @@ const Cursor = CursorComponent as unknown as React.FC<{ cursorColor?: string }>;
 
 export default function Hero() {
   const [text] = useTypewriter({
-    words: ["AI Engineer.", "Full-Stack Developer.", "Applied ML Builder."],
+    words: ["Software Developer.", "Full-Stack + DevOps Engineer.", "AI Systems Builder."],
     loop: true,
     delaySpeed: 2000,
   });
@@ -37,8 +37,8 @@ export default function Hero() {
           <Cursor cursorColor="#f5a623" />
         </h1>
         <p className="max-w-xl mx-auto text-foreground/60">
-          I build production ML/AI systems and the software around them — from RAG pipelines at
-          scale to LLM-powered apps I ship myself.
+          Software Developer at TELUS, building data-heavy apps on GKE over 200M+ records. On my
+          own time I build AI systems and the tools I actually use.
         </p>
       </div>
       <div className="relative z-10 flex flex-wrap items-center justify-center gap-4">

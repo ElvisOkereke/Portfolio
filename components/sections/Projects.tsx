@@ -18,7 +18,7 @@ export default function Projects() {
       className="max-w-6xl mx-auto px-6 py-24"
     >
       <h3 className="section-eyebrow mb-10">Projects</h3>
-      <div className="grid gap-6 md:grid-cols-3">
+      <div className="grid gap-6 md:grid-cols-2">
         {flagshipProjects.map((project) => (
           <ProjectCard key={project.id} project={project} onViewCaseStudy={setActiveProject} />
         ))}
