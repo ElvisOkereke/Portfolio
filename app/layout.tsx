@@ -8,13 +8,13 @@ const sans = Inter({ subsets: ["latin"], variable: "--font-sans" });
 const mono = JetBrains_Mono({ subsets: ["latin"], variable: "--font-mono" });
 
 export const metadata: Metadata = {
-  title: "Elvis Okereke — AI Engineer",
+  title: "Elvis Okereke — Software Developer",
   description:
-    "AI/ML engineer building production RAG systems, LLM-powered apps, and applied ML tools. Full-stack, Toronto.",
+    "Software Developer at TELUS (full-stack + DevOps) building AI systems and the tools I actually use. Toronto.",
   openGraph: {
-    title: "Elvis Okereke — AI Engineer",
+    title: "Elvis Okereke — Software Developer",
     description:
-      "AI/ML engineer building production RAG systems, LLM-powered apps, and applied ML tools.",
+      "Software Developer at TELUS (full-stack + DevOps) building AI systems and the tools I actually use.",
     siteName: "Elvis Okereke",
     type: "website",
   },
