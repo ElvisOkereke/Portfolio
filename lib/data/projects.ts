@@ -23,6 +23,7 @@ export const flagshipProjects: FlagshipProject[] = [
     tagline:
       "An AI research pipeline that finds small-business ideas from real demand on the web and turns the best into evidence-backed business cases.",
     tags: ["TypeScript", "LLM pipelines", "Evals", "Next.js"],
+    image: "/pics/pitchlab.png",
     githubUrl: "https://github.com/ElvisOkereke/PitchLab",
     caseStudy: {
       problem:
@@ -61,6 +62,7 @@ export const flagshipProjects: FlagshipProject[] = [
     tagline:
       "My self-hosted job-search engine: finds roles, tailors my resume without letting the AI make things up, and prepares applications for my approval.",
     tags: ["TypeScript", "Fastify", "React", "Playwright", "SQLite"],
+    image: "/pics/jobhunter.png",
     caseStudy: {
       problem:
         "AI resume tools embellish. They invent titles, dates and skills, which is the fastest way to fail an interview. Job boards are also scattered across dozens of applicant tracking systems.",
@@ -78,6 +80,7 @@ export const flagshipProjects: FlagshipProject[] = [
     tagline:
       "A lightweight Windows game-clip recorder written in Rust. I use it to clip my own gameplay.",
     tags: ["Rust", "Tauri", "WASAPI", "FFmpeg"],
+    image: "/pics/clips-gg.png",
     githubUrl: "https://github.com/ElvisOkereke/Clips.gg",
     caseStudy: {
       problem:
