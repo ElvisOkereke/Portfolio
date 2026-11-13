@@ -12,7 +12,8 @@ export default function Modal({ isOpen, onClose, children }: ModalProps) {
   useEffect(() => {
     if (!isOpen) return;
     const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
+      // A nested overlay (the screenshot lightbox) handles Escape first and marks it handled.
+      if (e.key === "Escape" && !e.defaultPrevented) onClose();
     };
     document.addEventListener("keydown", onKeyDown);
     document.body.style.overflow = "hidden";
@@ -32,7 +33,7 @@ export default function Modal({ isOpen, onClose, children }: ModalProps) {
       aria-modal="true"
     >
       <div
-        className="relative max-w-2xl w-full max-h-[85vh] overflow-y-auto rounded-lg border border-white/10 bg-[#111] p-8"
+        className="relative max-w-3xl w-full max-h-[88vh] overflow-y-auto rounded-xl border border-white/10 bg-[#111] p-6 md:p-10"
         onClick={(e) => e.stopPropagation()}
       >
         <button

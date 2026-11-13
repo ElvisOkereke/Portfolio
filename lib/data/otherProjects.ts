@@ -8,26 +8,11 @@ export type OtherProject = {
 
 export const otherProjects: OtherProject[] = [
   {
-    id: "auto-subtitle-translate",
-    title: "Auto Subtitle Translate",
-    description:
-      "A Chrome extension that transcribes tab audio locally with Whisper on WebGPU (WASM fallback) and shows translated live subtitles. No audio leaves the browser.",
-    tags: ["TypeScript", "Chrome MV3", "Whisper", "WebGPU"],
-    githubUrl: "https://github.com/ElvisOkereke/Auto_Subtitle_Translate_Extension",
-  },
-  {
     id: "swingtrader",
     title: "SwingTrader",
     description:
       "A swing-trading research backtester with no look-ahead (next-day-open fills), transaction costs everywhere and cost-matched buy-and-hold benchmarks. Strategies were fixed before testing, and the failures were reported honestly.",
     tags: ["Python", "Backtesting", "pandas"],
-  },
-  {
-    id: "ai-hq",
-    title: "AI-HQ",
-    description: "A multi-model AI chat app built for Theo's T3 Chat Cloneathon.",
-    tags: ["Next.js", "TypeScript", "LLMs"],
-    githubUrl: "https://github.com/ElvisOkereke/AI-HQ",
   },
   {
     id: "tennis-analyzer",

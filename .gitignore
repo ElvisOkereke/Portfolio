@@ -39,3 +39,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# full-resolution source models (compressed copies live in public/models)
+3dModels/*.glb

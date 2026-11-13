@@ -23,17 +23,19 @@ export default function About() {
         <h3 className="section-eyebrow">About</h3>
         <p className="text-foreground/80 leading-relaxed">
           I&apos;m a Computer Engineering graduate from Toronto Metropolitan University and a
-          Software Developer at TELUS, where I work across the stack: data pipelines, Next.js apps
-          on GKE, auth, CI/CD and infrastructure as code. Most recently I built a production
-          RAG knowledge-base server that cut LLM inference costs through semantic chunking and
-          response caching.
+          Software Developer at TELUS, where I lead SAiL, a distributed Next.js platform on GKE
+          that gives 1,000+ sales staff and dealers real-time access to 200M+ business records
+          through LLM tools and agentic workflows. I work across the whole stack: data sharding,
+          Spark pipelines, auth, CI/CD, infrastructure as code, and a production MCP server for
+          RAG that cut LLM inference costs.
         </p>
         <p className="text-foreground/80 leading-relaxed">
-          Outside of work I build the tools I actually use: an AI research pipeline that turns real
-          demand into sourced business cases, a job-search engine whose AI can&apos;t make things up
-          on my resume, a datalog viewer for tuning my car, and a Rust clip recorder for my games.
-          In school, I helped build fine-tuning pipelines that reduced measured bias in language
-          models by 20% using LoRA and parameter-efficient fine-tuning.
+          Outside of work I build AI systems that check their own work: a research engine that
+          re-verifies every claim it cites and is scored against frozen baselines, a Chrome
+          extension that runs OCR and Whisper on-device to translate video live, and a Rust game
+          recorder backed by a hardware-in-the-loop test rig. I care about measuring things. If a
+          number is on this site, there&apos;s a benchmark behind it. In school I fine-tuned LLMs
+          with LoRA and cut measured bias by 20%.
         </p>
         <p className="text-foreground/80 leading-relaxed">
           I&apos;m based in Toronto and always happy to talk about anything ML, infra, or the
