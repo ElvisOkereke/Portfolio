@@ -23,6 +23,8 @@ const UP = new THREE.Vector3(0, 1, 0);
 const IDENTITY = new THREE.Quaternion();
 /** Radians of part rotation per pixel dragged. */
 const DRAG_SPEED = 0.012;
+/** The Draco decoder is served from this site (public/draco), not fetched from gstatic.com. */
+const DRACO_PATH = "/draco/";
 
 /** A one-off rotation request for a part, from the parts panel. `token` makes repeats distinct. */
 export type PartCommand = { id: string; kind: "yaw" | "pitch" | "reset"; token: number };
@@ -78,8 +80,9 @@ function Model({
   onDragChange,
   registerGroup,
 }: ModelProps) {
-  const { scene } = useGLTF(product.modelPath);
+  const { scene } = useGLTF(product.modelPath, DRACO_PATH);
   const camera = useThree((state) => state.camera);
+  const invalidate = useThree((state) => state.invalidate);
   const material = useMemo(
     () =>
       new THREE.MeshStandardMaterial({
@@ -131,7 +134,8 @@ function Model({
     material.emissive.set(hovered ? "#f5a623" : "#000000");
     material.emissiveIntensity = hovered ? 0.18 : 0;
     material.needsUpdate = true;
-  }, [material, wireframe, dimmed, hovered]);
+    invalidate(); // the canvas only renders on demand
+  }, [material, wireframe, dimmed, hovered, invalidate]);
 
   // --- Rotating the part itself -------------------------------------------------
   const lift = useRef<THREE.Group>(null);
@@ -143,11 +147,13 @@ function Model({
   const rotateBy = (axis: THREE.Vector3, angle: number) => {
     target.current.premultiply(new THREE.Quaternion().setFromAxisAngle(axis, angle)).normalize();
     setRotated(target.current.angleTo(IDENTITY) > 0.01);
+    invalidate();
   };
   const cameraRight = () => new THREE.Vector3(1, 0, 0).applyQuaternion(camera.quaternion);
   const resetRotation = () => {
     target.current.identity();
     setRotated(false);
+    invalidate();
   };
 
   // Buttons in the parts panel: quarter turns and reset, animated by useFrame below.
@@ -164,7 +170,8 @@ function Model({
   useEffect(() => {
     target.current.identity();
     setRotated(false);
-  }, [resetToken]);
+    invalidate();
+  }, [resetToken, invalidate]);
 
   useFrame((_, delta) => {
     if (!spin.current || !lift.current) return;
@@ -172,6 +179,10 @@ function Model({
     // Rest on the floor when upright; float just clear of it while turned.
     const restY = rotated ? radius : height / 2;
     lift.current.position.y += (restY - lift.current.position.y) * (1 - Math.exp(-8 * delta));
+    // On-demand rendering: keep asking for frames until the part has settled.
+    const turning = spin.current.quaternion.angleTo(target.current) > 1e-4;
+    const lifting = Math.abs(restY - lift.current.position.y) > 1e-4;
+    if (turning || lifting) invalidate();
   });
 
   const startDrag = (e: ThreeEvent<PointerEvent>) => {
@@ -255,6 +266,7 @@ function Scene({
 }: CanvasProps) {
   const controls = useRef<CameraControlsImpl>(null);
   const groups = useRef(new Map<string, THREE.Group>());
+  const invalidate = useThree((state) => state.invalidate);
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   const [draggingPart, setDraggingPart] = useState(false);
   // Contact shadows re-render the whole scene, so they stay live only while a part is moving
@@ -265,7 +277,10 @@ function Scene({
   const settle = () => {
     setSettling(true);
     window.clearTimeout(settleTimer.current);
-    settleTimer.current = window.setTimeout(() => setSettling(false), 900);
+    settleTimer.current = window.setTimeout(() => {
+      setSettling(false);
+      invalidate(); // one more frame so the final shadow bake happens
+    }, 900);
   };
   const firstCommand = useRef(true);
   useEffect(() => {
@@ -346,7 +361,10 @@ function Scene({
 
   useFrame((_, delta) => {
     const c = controls.current;
-    if (autoRotate && c && !c.active && !draggingPart) c.azimuthAngle += delta * 0.25;
+    if (autoRotate && c && !c.active && !draggingPart) {
+      c.azimuthAngle += delta * 0.25;
+      invalidate(); // the turntable is the one thing that renders continuously
+    }
   });
 
   return (
@@ -426,8 +444,9 @@ export default function ThreeDShowcaseCanvas({ active, ...props }: CanvasProps &
   const [dpr, setDpr] = useState<[number, number]>([1, 1.5]);
   return (
     <Canvas
-      // Render nothing while the section is off screen or the tab is hidden.
-      frameloop={active ? "always" : "never"}
+      // Render only when something changes (camera, a moving part, the turntable), and nothing at
+      // all while the section is off screen or the tab is hidden.
+      frameloop={active ? "demand" : "never"}
       dpr={dpr}
       camera={{ position: [...OVERVIEW.position], fov: 42 }}
       onPointerDown={(e) => (down.current = { x: e.clientX, y: e.clientY })}
@@ -438,12 +457,16 @@ export default function ThreeDShowcaseCanvas({ active, ...props }: CanvasProps &
       }}
       gl={{ antialias: true }}
     >
-      <PerformanceMonitor
-        flipflops={3}
-        onDecline={() => setDpr([1, 1])}
-        onIncline={() => setDpr([1, 1.5])}
-        onFallback={() => setDpr([1, 1])}
-      />
+      {/* Frame-rate sampling is only meaningful while rendering continuously (the turntable);
+          with on-demand rendering an idle scene would read as a slow GPU. */}
+      {props.autoRotate && (
+        <PerformanceMonitor
+          flipflops={3}
+          onDecline={() => setDpr([1, 1])}
+          onIncline={() => setDpr([1, 1.5])}
+          onFallback={() => setDpr([1, 1])}
+        />
+      )}
       <color attach="background" args={["#0a0a0a"]} />
       <fog attach="fog" args={["#0a0a0a", 12, 26]} />
       <Suspense
@@ -459,4 +482,4 @@ export default function ThreeDShowcaseCanvas({ active, ...props }: CanvasProps &
   );
 }
 
-threeDProducts.forEach((p) => useGLTF.preload(p.modelPath));
+threeDProducts.forEach((p) => useGLTF.preload(p.modelPath, DRACO_PATH));
