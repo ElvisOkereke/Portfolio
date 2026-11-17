@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { SocialIcon } from "react-social-icons";
 import { motion } from "framer-motion";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 // Section links start with "/" so they also work from the /3d page.
 const nav = [
@@ -14,6 +15,7 @@ const nav = [
 ];
 
 export default function Header() {
+  const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
@@ -54,7 +56,7 @@ export default function Header() {
           initial={{ x: 40, opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
           transition={{ duration: 0.6 }}
-          className="flex items-center gap-5 md:gap-7"
+          className="flex items-center gap-3 sm:gap-5 md:gap-7"
         >
           {nav.map((item) => (
             <Link
@@ -69,9 +71,10 @@ export default function Header() {
           ))}
           <Link
             href="/3d"
-            className="rounded-full border border-white/20 px-3 py-1 text-xs uppercase tracking-widest text-foreground/80 hover:border-accent hover:text-accent transition-colors"
+            aria-current={pathname === "/3d" ? "page" : undefined}
+            className="inline-flex whitespace-nowrap rounded-full border border-white/20 px-3 py-1 text-xs uppercase tracking-widest text-foreground/80 hover:border-accent hover:text-accent transition-colors"
           >
-            3D Parts
+            3D<span className="hidden sm:inline">&nbsp;Parts</span>
           </Link>
           <a
             href="/resume.pdf"

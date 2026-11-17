@@ -257,15 +257,25 @@ function Scene({
   const groups = useRef(new Map<string, THREE.Group>());
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   const [draggingPart, setDraggingPart] = useState(false);
-  // Contact shadows re-render the whole scene, so they are baked once and re-baked only after a
-  // part moves (live while a part is being dragged), instead of every frame.
-  const [shadowKey, setShadowKey] = useState(0);
-  const rebakeShadows = () => setShadowKey((k) => k + 1);
+  // Contact shadows re-render the whole scene, so they stay live only while a part is moving
+  // (dragging, or settling for a moment after a drag, quarter turn or reset) and are otherwise
+  // baked once (frames={1} re-bakes on each re-render), instead of every frame.
+  const [settling, setSettling] = useState(false);
+  const settleTimer = useRef<number | undefined>(undefined);
+  const settle = () => {
+    setSettling(true);
+    window.clearTimeout(settleTimer.current);
+    settleTimer.current = window.setTimeout(() => setSettling(false), 900);
+  };
+  const firstCommand = useRef(true);
   useEffect(() => {
-    // Quarter turns and resets animate for a moment; bake once the part has settled.
-    const t = window.setTimeout(rebakeShadows, 900);
-    return () => window.clearTimeout(t);
+    if (firstCommand.current) {
+      firstCommand.current = false;
+      return;
+    }
+    settle();
   }, [partCommand, resetToken]);
+  useEffect(() => () => window.clearTimeout(settleTimer.current), []);
 
   useEffect(() => {
     document.body.style.cursor = draggingPart ? "grabbing" : hoveredId ? "grab" : "";
@@ -287,7 +297,7 @@ function Scene({
   const onDragChange = (dragging: boolean, id: string) => {
     if (!dragging) {
       refitSoon(id);
-      rebakeShadows();
+      settle();
     }
     if (dragging) {
       controls.current?.cancel(); // touch screens have no hover, so stop an orbit that just began
@@ -375,8 +385,7 @@ function Scene({
       ))}
 
       <ContactShadows
-        key={shadowKey}
-        frames={draggingPart ? Infinity : 1}
+        frames={draggingPart || settling ? Infinity : 1}
         position={[0, 0.001, 0]}
         opacity={0.55}
         scale={18}
@@ -412,8 +421,9 @@ function Scene({
 
 export default function ThreeDShowcaseCanvas({ active, ...props }: CanvasProps & { active: boolean }) {
   const down = useRef<{ x: number; y: number } | null>(null);
-  // Start at 1.5x (sharp on retina, far cheaper than 2x) and drop to 1x if the GPU struggles.
-  const [dpr, setDpr] = useState(1.5);
+  // Device pixel ratio clamped to at most 1.5x (sharp on retina, far cheaper than 2x; 1x screens stay
+  // at 1x), dropping to 1x if the GPU struggles.
+  const [dpr, setDpr] = useState<[number, number]>([1, 1.5]);
   return (
     <Canvas
       // Render nothing while the section is off screen or the tab is hidden.
@@ -428,7 +438,12 @@ export default function ThreeDShowcaseCanvas({ active, ...props }: CanvasProps &
       }}
       gl={{ antialias: true }}
     >
-      <PerformanceMonitor onDecline={() => setDpr(1)} onIncline={() => setDpr(1.5)} />
+      <PerformanceMonitor
+        flipflops={3}
+        onDecline={() => setDpr([1, 1])}
+        onIncline={() => setDpr([1, 1.5])}
+        onFallback={() => setDpr([1, 1])}
+      />
       <color attach="background" args={["#0a0a0a"]} />
       <fog attach="fog" args={["#0a0a0a", 12, 26]} />
       <Suspense
