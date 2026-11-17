@@ -70,10 +70,14 @@ const controlsHelp = [
   ["Click a part", "inspect"],
 ];
 
-export default function ThreeDShowcase() {
+/** `standalone` is the /3d page: the viewer mounts at once and the heading stands on its own. */
+export default function ThreeDShowcase({ standalone = false }: { standalone?: boolean }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const stageRef = useRef<HTMLDivElement>(null);
-  const [shouldMount, setShouldMount] = useState(false);
+  const [shouldMount, setShouldMount] = useState(standalone);
+  // Whether the stage is on screen and the tab is visible; the canvas renders nothing otherwise.
+  const [onScreen, setOnScreen] = useState(standalone);
+  const [tabVisible, setTabVisible] = useState(true);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [autoRotate, setAutoRotate] = useState(false);
   const [wireframe, setWireframe] = useState(false);
@@ -100,6 +104,20 @@ export default function ThreeDShowcase() {
     );
     observer.observe(node);
     return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    const node = containerRef.current;
+    if (!node) return;
+    const observer = new IntersectionObserver(([entry]) => setOnScreen(entry.isIntersecting));
+    observer.observe(node);
+    const onVisibility = () => setTabVisible(document.visibilityState === "visible");
+    onVisibility();
+    document.addEventListener("visibilitychange", onVisibility);
+    return () => {
+      observer.disconnect();
+      document.removeEventListener("visibilitychange", onVisibility);
+    };
   }, []);
 
   // Gentle turntable by default, unless the visitor prefers reduced motion.
@@ -135,8 +153,12 @@ export default function ThreeDShowcase() {
   const fmt = (n?: number) => (n ? `${(n / 1000).toFixed(1)}k triangles` : "…");
 
   return (
-    <section id="engineering" className="max-w-7xl mx-auto px-6 py-24">
-      <h3 className="section-eyebrow mb-4">Also: I design and build physical things</h3>
+    <section id="engineering" className={`max-w-7xl mx-auto px-6 ${standalone ? "py-10" : "py-24"}`}>
+      {standalone ? (
+        <h1 className="section-eyebrow mb-4">Interactive 3D parts: things I design and build</h1>
+      ) : (
+        <h3 className="section-eyebrow mb-4">Also: I design and build physical things</h3>
+      )}
       <p className="text-foreground/60 mb-8 max-w-2xl">
         Performance parts I&apos;ve designed for my own car. Grab any part and turn it in your
         hands, orbit and zoom around the stage, or click a part to fly to it and read what it does.
@@ -152,6 +174,7 @@ export default function ThreeDShowcase() {
           <div ref={containerRef} className="absolute inset-0">
             {shouldMount ? (
               <ThreeDShowcaseCanvas
+                active={(onScreen || fullscreen) && tabVisible}
                 selectedId={selectedId}
                 autoRotate={autoRotate}
                 wireframe={wireframe}

@@ -9,6 +9,7 @@ import {
   Grid,
   Html,
   Lightformer,
+  PerformanceMonitor,
   useGLTF,
 } from "@react-three/drei";
 import * as THREE from "three";
@@ -256,6 +257,15 @@ function Scene({
   const groups = useRef(new Map<string, THREE.Group>());
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   const [draggingPart, setDraggingPart] = useState(false);
+  // Contact shadows re-render the whole scene, so they are baked once and re-baked only after a
+  // part moves (live while a part is being dragged), instead of every frame.
+  const [shadowKey, setShadowKey] = useState(0);
+  const rebakeShadows = () => setShadowKey((k) => k + 1);
+  useEffect(() => {
+    // Quarter turns and resets animate for a moment; bake once the part has settled.
+    const t = window.setTimeout(rebakeShadows, 900);
+    return () => window.clearTimeout(t);
+  }, [partCommand, resetToken]);
 
   useEffect(() => {
     document.body.style.cursor = draggingPart ? "grabbing" : hoveredId ? "grab" : "";
@@ -275,7 +285,10 @@ function Scene({
   }, [hoveredId, draggingPart]);
 
   const onDragChange = (dragging: boolean, id: string) => {
-    if (!dragging) refitSoon(id);
+    if (!dragging) {
+      refitSoon(id);
+      rebakeShadows();
+    }
     if (dragging) {
       controls.current?.cancel(); // touch screens have no hover, so stop an orbit that just began
       onUserInteract();
@@ -361,7 +374,15 @@ function Scene({
         />
       ))}
 
-      <ContactShadows position={[0, 0.001, 0]} opacity={0.55} scale={18} blur={2.4} far={3} />
+      <ContactShadows
+        key={shadowKey}
+        frames={draggingPart ? Infinity : 1}
+        position={[0, 0.001, 0]}
+        opacity={0.55}
+        scale={18}
+        blur={2.4}
+        far={3}
+      />
       <Grid
         position={[0, -0.002, 0]}
         args={[30, 30]}
@@ -389,11 +410,15 @@ function Scene({
   );
 }
 
-export default function ThreeDShowcaseCanvas(props: CanvasProps) {
+export default function ThreeDShowcaseCanvas({ active, ...props }: CanvasProps & { active: boolean }) {
   const down = useRef<{ x: number; y: number } | null>(null);
+  // Start at 1.5x (sharp on retina, far cheaper than 2x) and drop to 1x if the GPU struggles.
+  const [dpr, setDpr] = useState(1.5);
   return (
     <Canvas
-      dpr={[1, 2]}
+      // Render nothing while the section is off screen or the tab is hidden.
+      frameloop={active ? "always" : "never"}
+      dpr={dpr}
       camera={{ position: [...OVERVIEW.position], fov: 42 }}
       onPointerDown={(e) => (down.current = { x: e.clientX, y: e.clientY })}
       onPointerMissed={(e) => {
@@ -403,6 +428,7 @@ export default function ThreeDShowcaseCanvas(props: CanvasProps) {
       }}
       gl={{ antialias: true }}
     >
+      <PerformanceMonitor onDecline={() => setDpr(1)} onIncline={() => setDpr(1.5)} />
       <color attach="background" args={["#0a0a0a"]} />
       <fog attach="fog" args={["#0a0a0a", 12, 26]} />
       <Suspense

@@ -34,6 +34,7 @@ export default function Hero() {
         alt="Portrait of Elvis Okereke"
         width={320}
         height={320}
+        sizes="(min-width: 768px) 192px, 144px"
         priority
         className="relative rounded-full h-36 w-36 md:h-48 md:w-48 object-cover border border-white/10"
       />

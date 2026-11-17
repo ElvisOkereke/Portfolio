@@ -4,12 +4,13 @@ import { SocialIcon } from "react-social-icons";
 import { motion } from "framer-motion";
 import Link from "next/link";
 
+// Section links start with "/" so they also work from the /3d page.
 const nav = [
-  { href: "#about", label: "About" },
-  { href: "#experience", label: "Experience" },
-  { href: "#projects", label: "Projects" },
-  { href: "#skills", label: "Skills" },
-  { href: "#contact", label: "Contact" },
+  { href: "/#about", label: "About" },
+  { href: "/#experience", label: "Experience" },
+  { href: "/#projects", label: "Projects" },
+  { href: "/#skills", label: "Skills" },
+  { href: "/#contact", label: "Contact" },
 ];
 
 export default function Header() {
@@ -66,6 +67,12 @@ export default function Header() {
               {item.label}
             </Link>
           ))}
+          <Link
+            href="/3d"
+            className="rounded-full border border-white/20 px-3 py-1 text-xs uppercase tracking-widest text-foreground/80 hover:border-accent hover:text-accent transition-colors"
+          >
+            3D Parts
+          </Link>
           <a
             href="/resume.pdf"
             download
