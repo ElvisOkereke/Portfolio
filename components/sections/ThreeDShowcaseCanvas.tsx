@@ -21,6 +21,8 @@ const RING_RADIUS = 3.3;
 const OVERVIEW = { position: [0, 4.2, 9.8] as const, target: [0, 0.6, 0] as const };
 const UP = new THREE.Vector3(0, 1, 0);
 const IDENTITY = new THREE.Quaternion();
+/** How far a selected or turned part floats above the lowest height that keeps it clear of the floor. */
+const LIFT_CLEARANCE = 0.12;
 /** Radians of part rotation per pixel dragged. */
 const DRAG_SPEED = 0.012;
 /** The Draco decoder is served from this site (public/draco), not fetched from gstatic.com. */
@@ -52,6 +54,8 @@ type ModelProps = {
   product: ThreeDProduct;
   position: THREE.Vector3;
   hovered: boolean;
+  /** The selected part floats up off the floor, ready to inspect. */
+  selected: boolean;
   /** Hidden while any part is being dragged, so it doesn't jitter over the model. */
   showTooltip: boolean;
   dimmed: boolean;
@@ -69,6 +73,7 @@ function Model({
   product,
   position,
   hovered,
+  selected,
   showTooltip,
   dimmed,
   wireframe,
@@ -127,6 +132,13 @@ function Model({
 
   useEffect(() => onStats(product.id, triangles), [onStats, product.id, triangles]);
 
+  // The camera frames a part by a sphere that turning cannot change: centred on the part's
+  // pivot at its lifted height, with radius = half its box diagonal.
+  const outer = useRef<THREE.Group | null>(null);
+  useEffect(() => {
+    if (outer.current) outer.current.userData.frameRadius = radius;
+  }, [radius]);
+
   useEffect(() => {
     material.wireframe = wireframe;
     material.transparent = dimmed;
@@ -177,7 +189,7 @@ function Model({
     if (!spin.current || !lift.current) return;
     spin.current.quaternion.slerp(target.current, 1 - Math.exp(-(dragging.current ? 30 : 9) * delta));
     // Rest on the floor when upright; float just clear of it while turned.
-    const restY = rotated ? radius : height / 2;
+    const restY = selected || rotated ? radius + LIFT_CLEARANCE : height / 2;
     lift.current.position.y += (restY - lift.current.position.y) * (1 - Math.exp(-8 * delta));
     // On-demand rendering: keep asking for frames until the part has settled.
     const turning = spin.current.quaternion.angleTo(target.current) > 1e-4;
@@ -212,7 +224,11 @@ function Model({
 
   return (
     <group
-      ref={(g) => registerGroup(product.id, g)}
+      ref={(g) => {
+        outer.current = g;
+        if (g) g.userData.frameRadius = radius;
+        registerGroup(product.id, g);
+      }}
       position={position}
       onPointerOver={(e: ThreeEvent<PointerEvent>) => {
         e.stopPropagation();
@@ -233,9 +249,10 @@ function Model({
           </group>
         </group>
       </group>
-      {hovered && showTooltip && (
+      {/* The selected part has its caption in the corner, so it gets no hover tooltip. */}
+      {hovered && showTooltip && !selected && (
         <Html
-          position={[0, (rotated ? radius * 2 : height) + 0.35, 0]}
+          position={[0, (rotated ? radius * 2 + LIFT_CLEARANCE : height) + 0.35, 0]}
           center
           zIndexRange={[20, 0]}
           style={{ pointerEvents: "none" }}
@@ -301,7 +318,7 @@ function Scene({
       return;
     }
     settle();
-  }, [partCommand, resetToken]);
+  }, [partCommand, resetToken, selectedId]); // turns, resets and selection lifts all move parts
   useEffect(() => () => window.clearTimeout(settleTimer.current), []);
 
   useEffect(() => {
@@ -322,10 +339,7 @@ function Scene({
   }, [hoveredId, draggingPart]);
 
   const onDragChange = (dragging: boolean, id: string) => {
-    if (!dragging) {
-      refitSoon(id);
-      settle();
-    }
+    if (!dragging) settle();
     if (dragging) {
       controls.current?.cancel(); // touch screens have no hover, so stop an orbit that just began
       onUserInteract();
@@ -338,15 +352,17 @@ function Scene({
     controls.current?.setLookAt(...OVERVIEW.position, ...OVERVIEW.target, false);
   }, []);
 
-  // Frame a part by its bounding sphere, so the framing still fits after the part is turned.
+  // Frame a part where it will be once lifted, by a sphere that turning the part cannot change
+  // (centred on its pivot, radius = half its box diagonal). The framing is exact from the first
+  // frame of the flight and never needs re-fitting after the part is turned or dragged.
   const frameSelected = (id: string | null) => {
     const c = controls.current;
     if (!c) return;
     const group = id ? groups.current.get(id) : null;
-    if (group) {
-      const sphere = new THREE.Box3().setFromObject(group).getBoundingSphere(new THREE.Sphere());
-      sphere.radius *= 1.1;
-      void c.fitToSphere(sphere, true);
+    const radius = group?.userData.frameRadius as number | undefined;
+    if (group && radius) {
+      const center = group.position.clone().add(new THREE.Vector3(0, radius + LIFT_CLEARANCE, 0));
+      void c.fitToSphere(new THREE.Sphere(center, radius * 1.15), true);
     } else {
       void c.setLookAt(...OVERVIEW.position, ...OVERVIEW.target, true);
     }
@@ -357,19 +373,6 @@ function Scene({
     frameSelected(selectedId);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedId, resetToken]);
-
-  // After the selected part is turned (buttons or drag), re-frame once it has settled.
-  const refitTimer = useRef<number | undefined>(undefined);
-  const refitSoon = (id: string) => {
-    if (id !== selectedId) return;
-    window.clearTimeout(refitTimer.current);
-    refitTimer.current = window.setTimeout(() => frameSelected(id), 650);
-  };
-  useEffect(() => {
-    if (partCommand) refitSoon(partCommand.id);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [partCommand]);
-  useEffect(() => () => window.clearTimeout(refitTimer.current), []);
 
   // Pressing Play must start the turntable loop explicitly in on-demand mode.
   useEffect(() => {
@@ -403,13 +406,18 @@ function Scene({
           product={product}
           position={position}
           hovered={hoveredId === product.id}
+          selected={selectedId === product.id}
           dimmed={selectedId !== null && selectedId !== product.id}
           wireframe={wireframe}
           command={partCommand}
           resetToken={resetToken}
           showTooltip={!draggingPart}
           onHover={setHoveredId}
-          onSelect={(id) => onSelect(id === selectedId ? null : id)}
+          // Clicking the selected part keeps it selected (a short grab to turn it must not drop it);
+          // deselect with empty space, Esc, the caption's back link or the parts panel.
+          onSelect={(id) => {
+            if (id !== selectedId) onSelect(id);
+          }}
           onStats={onStats}
           onDragChange={onDragChange}
           registerGroup={(id, g) => {

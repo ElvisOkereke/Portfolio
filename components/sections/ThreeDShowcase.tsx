@@ -136,6 +136,16 @@ export default function ThreeDShowcase({ standalone = false }: { standalone?: bo
   }, []);
   const onUserInteract = useCallback(() => setAutoRotate(false), []);
 
+  // Esc returns to all parts.
+  useEffect(() => {
+    if (!selectedId) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setSelectedId(null);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [selectedId]);
+
   const select = (id: string | null) => {
     setSelectedId(id);
     if (id) setAutoRotate(false);
