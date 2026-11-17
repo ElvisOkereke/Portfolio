@@ -1,6 +1,6 @@
 "use client";
 import { Suspense, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
-import { Canvas, useFrame, useThree, type ThreeEvent } from "@react-three/fiber";
+import { addEffect, Canvas, useFrame, useThree, type ThreeEvent } from "@react-three/fiber";
 import {
   CameraControls,
   CameraControlsImpl,
@@ -267,6 +267,18 @@ function Scene({
   const controls = useRef<CameraControlsImpl>(null);
   const groups = useRef(new Map<string, THREE.Group>());
   const invalidate = useThree((state) => state.invalidate);
+  const clock = useThree((state) => state.clock);
+  // On-demand rendering leaves gaps between frames, and the clock keeps running through them, so
+  // the first frame after an idle gap would get the whole gap as its delta and every eased
+  // animation (camera fly-to, part turns, turntable) would jump to its end. Treat that first frame
+  // as one nominal 60 fps frame instead.
+  useEffect(() => {
+    let last = -Infinity;
+    return addEffect((t) => {
+      if (t - last > 100) clock.oldTime = performance.now() - 1000 / 60;
+      last = t;
+    });
+  }, [clock]);
   const [hoveredId, setHoveredId] = useState<string | null>(null);
   const [draggingPart, setDraggingPart] = useState(false);
   // Contact shadows re-render the whole scene, so they stay live only while a part is moving
@@ -359,6 +371,11 @@ function Scene({
   }, [partCommand]);
   useEffect(() => () => window.clearTimeout(refitTimer.current), []);
 
+  // Pressing Play must start the turntable loop explicitly in on-demand mode.
+  useEffect(() => {
+    if (autoRotate) invalidate();
+  }, [autoRotate, invalidate]);
+
   useFrame((_, delta) => {
     const c = controls.current;
     if (autoRotate && c && !c.active && !draggingPart) {
@@ -442,6 +459,7 @@ export default function ThreeDShowcaseCanvas({ active, ...props }: CanvasProps &
   // Device pixel ratio clamped to at most 1.5x (sharp on retina, far cheaper than 2x; 1x screens stay
   // at 1x), dropping to 1x if the GPU struggles.
   const [dpr, setDpr] = useState<[number, number]>([1, 1.5]);
+  const fellBack = useRef(false);
   return (
     <Canvas
       // Render only when something changes (camera, a moving part, the turntable), and nothing at
@@ -457,16 +475,6 @@ export default function ThreeDShowcaseCanvas({ active, ...props }: CanvasProps &
       }}
       gl={{ antialias: true }}
     >
-      {/* Frame-rate sampling is only meaningful while rendering continuously (the turntable);
-          with on-demand rendering an idle scene would read as a slow GPU. */}
-      {props.autoRotate && (
-        <PerformanceMonitor
-          flipflops={3}
-          onDecline={() => setDpr([1, 1])}
-          onIncline={() => setDpr([1, 1.5])}
-          onFallback={() => setDpr([1, 1])}
-        />
-      )}
       <color attach="background" args={["#0a0a0a"]} />
       <fog attach="fog" args={["#0a0a0a", 12, 26]} />
       <Suspense
@@ -477,6 +485,22 @@ export default function ThreeDShowcaseCanvas({ active, ...props }: CanvasProps &
         }
       >
         <Scene {...props} />
+        {/* Frame-rate sampling is only meaningful once the models are in (inside Suspense) and
+            while rendering continuously (the turntable); with on-demand rendering an idle scene
+            would read as a slow GPU. Once it has fallen back to 1x it stays there. */}
+        {props.autoRotate && (
+          <PerformanceMonitor
+            flipflops={3}
+            onDecline={() => setDpr([1, 1])}
+            onIncline={() => {
+              if (!fellBack.current) setDpr([1, 1.5]);
+            }}
+            onFallback={() => {
+              fellBack.current = true;
+              setDpr([1, 1]);
+            }}
+          />
+        )}
       </Suspense>
     </Canvas>
   );
