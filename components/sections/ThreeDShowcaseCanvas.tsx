@@ -25,6 +25,11 @@ const IDENTITY = new THREE.Quaternion();
 const LIFT_CLEARANCE = 0.12;
 /** Radians of part rotation per pixel dragged. */
 const DRAG_SPEED = 0.012;
+/** Pointer travel (px) before a press on a part becomes a turn rather than a click. */
+const DRAG_THRESHOLD_PX = 5;
+/** Comfortable camera elevation band when flying to a part (radians from straight down). */
+const VIEW_POLAR_MIN = (50 * Math.PI) / 180;
+const VIEW_POLAR_MAX = (70 * Math.PI) / 180;
 /** The Draco decoder is served from this site (public/draco), not fetched from gstatic.com. */
 const DRACO_PATH = "/draco/";
 
@@ -135,9 +140,8 @@ function Model({
   // The camera frames a part by a sphere that turning cannot change: centred on the part's
   // pivot at its lifted height, with radius = half its box diagonal.
   const outer = useRef<THREE.Group | null>(null);
-  useEffect(() => {
-    if (outer.current) outer.current.userData.frameRadius = radius;
-  }, [radius]);
+  // Lifting or landing on (de)selection needs a first frame in on-demand rendering.
+  useEffect(() => invalidate(), [selected, invalidate]);
 
   useEffect(() => {
     material.wireframe = wireframe;
@@ -189,7 +193,9 @@ function Model({
     if (!spin.current || !lift.current) return;
     spin.current.quaternion.slerp(target.current, 1 - Math.exp(-(dragging.current ? 30 : 9) * delta));
     // Rest on the floor when upright; float just clear of it while turned.
-    const restY = selected || rotated ? radius + LIFT_CLEARANCE : height / 2;
+    // Stay lifted while selected, turned, or still turning back upright (so it can't dip into the floor).
+    const stillTurning = spin.current.quaternion.angleTo(target.current) > 0.01;
+    const restY = selected || rotated || stillTurning ? radius + LIFT_CLEARANCE : height / 2;
     lift.current.position.y += (restY - lift.current.position.y) * (1 - Math.exp(-8 * delta));
     // On-demand rendering: keep asking for frames until the part has settled.
     const turning = spin.current.quaternion.angleTo(target.current) > 1e-4;
@@ -199,11 +205,23 @@ function Model({
 
   const startDrag = (e: ThreeEvent<PointerEvent>) => {
     if (e.button !== 0) return; // right-drag still pans the camera
+    // Faded parts (another part is selected) are click-to-switch only; a drag there orbits.
+    if (dimmed) return;
     e.stopPropagation();
     dragging.current = true;
     onDragChange(true, product.id);
-    let last = { x: e.nativeEvent.clientX, y: e.nativeEvent.clientY };
+    const start = { x: e.nativeEvent.clientX, y: e.nativeEvent.clientY };
+    let last = start;
+    let turning = false;
     const move = (ev: PointerEvent) => {
+      // A click wobbles a few pixels; only start turning the part past a small threshold, so a
+      // click never leaves it slightly tilted (and floating).
+      if (!turning) {
+        if (Math.hypot(ev.clientX - start.x, ev.clientY - start.y) < DRAG_THRESHOLD_PX) return;
+        turning = true;
+        last = { x: ev.clientX, y: ev.clientY };
+        return;
+      }
       const dx = ev.clientX - last.x;
       const dy = ev.clientY - last.y;
       last = { x: ev.clientX, y: ev.clientY };
@@ -322,23 +340,26 @@ function Scene({
   useEffect(() => () => window.clearTimeout(settleTimer.current), []);
 
   useEffect(() => {
-    document.body.style.cursor = draggingPart ? "grabbing" : hoveredId ? "grab" : "";
+    // grab = this part can be turned; pointer = a faded part you can click to switch to.
+    const canTurn = hoveredId !== null && (selectedId === null || hoveredId === selectedId);
+    document.body.style.cursor = draggingPart ? "grabbing" : canTurn ? "grab" : hoveredId ? "pointer" : "";
     return () => {
       document.body.style.cursor = "";
     };
-  }, [hoveredId, draggingPart]);
+  }, [hoveredId, draggingPart, selectedId]);
 
   // Left-drag over a part rotates the part, so the camera must not orbit at the same time.
   // Wheel zoom and right-drag pan stay on.
   useEffect(() => {
     const c = controls.current;
     if (!c) return;
-    const onPart = hoveredId !== null || draggingPart;
+    // Left-drag turns a part only over a turnable part; over faded parts it orbits.
+    const onPart = draggingPart || (hoveredId !== null && (selectedId === null || hoveredId === selectedId));
     c.mouseButtons.left = onPart ? CameraControlsImpl.ACTION.NONE : CameraControlsImpl.ACTION.ROTATE;
     c.touches.one = onPart ? CameraControlsImpl.ACTION.NONE : CameraControlsImpl.ACTION.TOUCH_ROTATE;
-  }, [hoveredId, draggingPart]);
+  }, [hoveredId, draggingPart, selectedId]);
 
-  const onDragChange = (dragging: boolean, id: string) => {
+  const onDragChange = (dragging: boolean) => {
     if (!dragging) settle();
     if (dragging) {
       controls.current?.cancel(); // touch screens have no hover, so stop an orbit that just began
@@ -363,6 +384,10 @@ function Scene({
     if (group && radius) {
       const center = group.position.clone().add(new THREE.Vector3(0, radius + LIFT_CLEARANCE, 0));
       void c.fitToSphere(new THREE.Sphere(center, radius * 1.15), true);
+      // Keep the current direction (no swing around), but land at a comfortable elevation
+      // rather than near top-down or at the horizon if the visitor had orbited.
+      const polar = THREE.MathUtils.clamp(c.polarAngle, VIEW_POLAR_MIN, VIEW_POLAR_MAX);
+      if (polar !== c.polarAngle) void c.rotatePolarTo(polar, true);
     } else {
       void c.setLookAt(...OVERVIEW.position, ...OVERVIEW.target, true);
     }
@@ -416,7 +441,9 @@ function Scene({
           // Clicking the selected part keeps it selected (a short grab to turn it must not drop it);
           // deselect with empty space, Esc, the caption's back link or the parts panel.
           onSelect={(id) => {
-            if (id !== selectedId) onSelect(id);
+            // Clicking the selected part again re-centres it (after orbiting or zooming away).
+            if (id === selectedId) frameSelected(id);
+            else onSelect(id);
           }}
           onStats={onStats}
           onDragChange={onDragChange}

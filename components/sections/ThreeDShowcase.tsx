@@ -137,14 +137,18 @@ export default function ThreeDShowcase({ standalone = false }: { standalone?: bo
   const onUserInteract = useCallback(() => setAutoRotate(false), []);
 
   // Esc returns to all parts.
+  // Only while the viewer is on screen, not while typing, and not the Esc that exits full screen.
   useEffect(() => {
-    if (!selectedId) return;
+    if (!selectedId || !(onScreen || fullscreen)) return;
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setSelectedId(null);
+      if (e.key !== "Escape" || e.defaultPrevented || document.fullscreenElement) return;
+      const t = e.target as HTMLElement | null;
+      if (t && (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName))) return;
+      setSelectedId(null);
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [selectedId]);
+  }, [selectedId, onScreen, fullscreen]);
 
   const select = (id: string | null) => {
     setSelectedId(id);
@@ -257,7 +261,7 @@ export default function ThreeDShowcase({ standalone = false }: { standalone?: bo
                 onClick={reset}
                 className="mt-2 font-mono text-[11px] text-foreground/60 hover:text-accent"
               >
-                ← Back to all parts
+                ← Back to all parts <span className="text-foreground/35">(Esc)</span>
               </button>
             </div>
           )}
