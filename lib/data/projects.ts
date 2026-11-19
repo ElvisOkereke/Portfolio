@@ -102,8 +102,8 @@ export const flagshipProjects: FlagshipProject[] = [
       { value: "0.93", label: "judged translation quality (DeepL: 0.50)" },
     ],
     status: "Preparing for Chrome Web Store launch",
-    image: "/pics/projects/subtitle-translator-cover.webp",
-    imageStyle: "screen",
+    image: "/pics/projects/subtitle-translator-in-action.webp",
+    imageStyle: "window",
     gallery: [
       { src: "/pics/projects/subtitle-translator-overlay.webp", caption: "Subtitles mode on a Korean League of Legends stream: the burned-in Korean line, translated in place (real DeepL output).", width: 2160, height: 1215 },
       { src: "/pics/projects/subtitle-translator-setup.webp", caption: "First-run setup: languages, a graphics-card check, and models prepared ahead of use so captions start in seconds.", width: 2160, height: 1964 },
