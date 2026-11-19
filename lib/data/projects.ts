@@ -96,32 +96,54 @@ export const flagshipProjects: FlagshipProject[] = [
     title: "Auto Subtitle Translator",
     kind: "On-device AI · Chrome extension",
     tagline:
-      "Translates video live. On-device OCR reads subtitles burned into the picture, on-device Whisper transcribes speech, and Claude replaces a fast DeepL draft with a translation that knows what you are watching.",
-    tags: ["TypeScript", "ONNX Runtime Web", "WebGPU", "Whisper", "Claude", "Playwright"],
+      "Translates video as you watch. On-device OCR reads subtitles burned into the picture, on-device Whisper transcribes speech, and Claude replaces a fast DeepL draft with a translation that knows what you are watching.",
+    tags: ["TypeScript", "ONNX Runtime Web", "WebGPU", "WebCodecs", "Whisper", "Claude", "Playwright"],
     metrics: [
       { value: "0.20 s", label: "subtitle → English (p50)" },
       { value: "2.3%", label: "OCR error rate (Tesseract: 17.4%)" },
       { value: "0.93", label: "judged translation quality (DeepL: 0.50)" },
     ],
-    status: "Active development",
+    status: "Preparing for Chrome Web Store launch",
     visual: "subtitle-overlay",
+    gallery: [
+      { src: "/pics/projects/subtitle-translator-overlay.webp", caption: "Subtitles mode on a Korean League of Legends stream: the burned-in Korean line, translated in place (real DeepL output).", width: 2160, height: 1215 },
+      { src: "/pics/projects/subtitle-translator-setup.webp", caption: "First-run setup: languages, a graphics-card check, and models prepared ahead of use so captions start in seconds.", width: 2160, height: 1964 },
+      { src: "/pics/projects/subtitle-translator-popup.webp", caption: "The popup: a caption bar says what is happening in the tab; the two modes and the target language below it.", width: 720, height: 1200 },
+      { src: "/pics/projects/subtitle-translator-debug.webp", caption: "The on-page debug panel: problems first, then capture, speech model, read-ahead and translation state, with a copyable report.", width: 2160, height: 1215 },
+    ],
     githubUrl: "https://github.com/ElvisOkereke/Auto_Subtitle_Translate_Extension",
     caseStudy: {
       problem:
         "Huge amounts of video, like Korean League of Legends streams, Spanish football or anime, have subtitles burned into the picture in a language you can't read. Browser translators can't see pixels, and generic machine translation mangles names and jargon.",
       approach:
-        "Draw a box around the subtitles. The extension samples frames, detects changes, runs OCR locally and overlays English on the original line. On YouTube it reads ahead: it taps the player's media stream, decodes buffered video with WebCodecs, and translates lines about 28 s before they appear. Translation is \"fast then best\": DeepL shows instantly, then Claude swaps in a version that knows the video's title and channel and keeps names consistent through a learned glossary.",
+        "Draw a box around the subtitles, roughly. The extension reads around the box, picks the subtitle out of everything else on screen, and overlays the translation on the original line. On YouTube it reads ahead: it taps the player's media stream, decodes the buffered video and audio with WebCodecs, and translates lines about 28 s before they appear, so captions land on time. Translation is \"fast then best\": DeepL shows instantly, then Claude swaps in a version that knows the video's title and channel and keeps names consistent through a learned glossary.",
       architecture:
-        "Chrome MV3: PaddleOCR PP-OCRv5 on ONNX Runtime Web (WebGPU with a wasm fallback) in a worker inside an isolated extension-origin iframe; tab capture → voice activity detection → Whisper in an offscreen document; a browser-independent translation engine layer. An optional hosted tier (Hono, node:sqlite, Stripe, email-code accounts, per-plan budgets and rate limits) runs as a Docker container on Google Cloud.",
+        "Chrome MV3: PaddleOCR PP-OCRv5 on ONNX Runtime Web (WebGPU with a wasm fallback) in a worker inside an isolated extension-origin iframe; a main-world Media Source tap that demuxes fMP4 and WebM and decodes ahead of playback; tab capture → voice activity detection → Whisper in an offscreen document; a browser-independent translation engine layer. An optional hosted tier (Hono, node:sqlite, Stripe, email-code accounts, per-plan budgets and rate limits) is packaged for Docker on Google Cloud.",
       results:
-        "29 of 29 test lines shown in time, 0.48 s including a real DeepL round trip, and 29 of 29 translated before they appeared with read-ahead. Claude beat DeepL in blind comparisons on LaLiga, anime and K-drama subtitles, at about $3.40 per hour of video.",
+        "29 of 29 test lines shown in time (0.48 s including a real DeepL round trip), and 29 of 29 translated before they appeared with read-ahead. Every box shape tested, from loose to the whole lower half, reads 14–15 of 15 lines. Claude beat DeepL in blind comparisons on LaLiga, anime and K-drama subtitles, at about $3.40 per hour of video.",
       highlights: [
-        "Benchmarked OCR engines on 76 labelled crops: PaddleOCR with a box-relative size filter reached 2.3% character error and 0 false positives on 18 gameplay frames, against Tesseract's 17.4% and 17/18. 22 ms per crop on WebGPU.",
-        "Cut the speech model download from 971 MB to 209 MB and made inference 5× faster (1.93 s → 0.38 s per clip) using a fp32 encoder and a q4 decoder, with no accuracy loss on the test clips.",
+        "Benchmarked OCR engines on 76 labelled crops: PaddleOCR reached 2.3% character error and 0 false positives on gameplay frames, against Tesseract's 17.4% and 17/18. 22 ms per crop on WebGPU.",
+        "Made Subtitles mode work with the box people actually draw. A sweep over 8 hand-labelled videos in 5 languages showed loose or oversized boxes read 0–13% of lines. A centred-span subtitle picker, a margin around the box and per-video learning of the subtitle text size, which keeps game notices, stream chat and sponsor logos out, raised every shape to 89–94%.",
+        "Diagnosed a \"stuck at 100%\" speech model on GPUs: the first WebGPU load spent 7.7 minutes compiling shaders, and a 3-minute stall watchdog kept killing and re-downloading it. Split the watchdog into download and setup phases, and moved the one-time setup to a first-run page: Audio mode now starts in 7.1 s.",
+        "Read-ahead for speech: Opus and AAC decoded in the page, transcribed ahead with sentence timestamps, so captions appear 0.02–0.1 s after the words start instead of seconds after the speaker finishes.",
         "Translation benchmark on real subtitle lines: Claude with neighbouring-line context 89%, DeepL 46–65%, local open models ≤ 15%. Neighbouring context was the single biggest quality gain.",
-        "Cut cold-start latency from 11.5 s to 2.9 s with separate request lanes, unbatched urgent lines and a bounded wait for the topic summary.",
-        "Everything is verified by machines: 400+ tests, and Playwright drives real Chrome with the extension loaded, real tab audio, real OCR on video frames, real YouTube, and an LLM judge that grades the translations.",
+        "Verified by machines: 588 unit tests and 67 browser tests in one release gate. Playwright drives real Chrome with the extension loaded, real tab audio, real OCR on video frames, real YouTube, and an LLM judge that grades the translations.",
       ],
+      scope: {
+        built: [
+          "Subtitles mode with read-ahead, robust to imperfect boxes",
+          "Audio mode with read-ahead on YouTube",
+          "Fast-then-best translation with a learned glossary",
+          "First-run setup, debug panel, light and dark UI",
+          "Hosted subscription service (accounts, Stripe, metered proxy)",
+        ],
+        planned: [
+          "Keyless translation with Chrome's on-device translator",
+          "Chrome Web Store launch and hosted service deployment",
+          "Automatic subtitle detection (no box to draw)",
+          "Better accuracy on fast, overlapping speech",
+        ],
+      },
     },
   },
   {
