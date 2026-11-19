@@ -41,8 +41,6 @@ export type FlagshipProject = {
   imageStyle?: "screen" | "window";
   /** Full-size screenshots shown in the case study, each opens in a lightbox. */
   gallery?: Screenshot[];
-  /** Custom illustration rendered instead of a screenshot. */
-  visual?: "subtitle-overlay";
   githubUrl?: string;
   liveUrl?: string;
   caseStudy: CaseStudy;
@@ -104,7 +102,8 @@ export const flagshipProjects: FlagshipProject[] = [
       { value: "0.93", label: "judged translation quality (DeepL: 0.50)" },
     ],
     status: "Preparing for Chrome Web Store launch",
-    visual: "subtitle-overlay",
+    image: "/pics/projects/subtitle-translator-cover.webp",
+    imageStyle: "screen",
     gallery: [
       { src: "/pics/projects/subtitle-translator-overlay.webp", caption: "Subtitles mode on a Korean League of Legends stream: the burned-in Korean line, translated in place (real DeepL output).", width: 2160, height: 1215 },
       { src: "/pics/projects/subtitle-translator-setup.webp", caption: "First-run setup: languages, a graphics-card check, and models prepared ahead of use so captions start in seconds.", width: 2160, height: 1964 },
